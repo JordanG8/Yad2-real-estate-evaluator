@@ -1,4 +1,5 @@
 const puppeteer = require("puppeteer");
+const fs = require("fs");
 
 const config = {
   sitekey: "84edd4de146581a0440e9f0c58c32066",
@@ -15,7 +16,7 @@ const chromeOptions = {
   defaultViewport: null,
 };
 
-async function GetPrices() {
+async function GetYad2List() {
   try {
     const browser = await puppeteer.launch(chromeOptions, {
       ignoreDefaultArgs: ["--disable-extensions"],
@@ -33,6 +34,14 @@ async function GetPrices() {
         )
       );
       prices.forEach((element) => console.log(element));
+      for (let i = 0; i < prices.length; i++) {
+        fs.appendFile("dump.txt", prices[i], (err) => {
+          if (err) {
+            console.error(err);
+          }
+        });
+      }
+
       var newPage = config.url.concat("?page=", pageNumber.toString());
       page.goto(newPage);
       await page.waitForNavigation({ waitUntil: "networkidle2" });
@@ -41,4 +50,4 @@ async function GetPrices() {
     console.error(error);
   }
 }
-GetPrices();
+GetYad2List();
