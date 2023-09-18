@@ -9,7 +9,7 @@ const config = {
 };
 
 const chromeOptions = {
-  executablePath: "C:/Program Files/Google/Chrome/Application/chrome.exe",
+  executablePath: "C:/Program Files/Google/Chrome/Application/chrome.exe", // CHANGE THIS TO YOUR CHROME.EXE PATH
   headless: false,
   sloMo: 10,
   defaultViewport: null,
@@ -19,21 +19,24 @@ async function GetPrices() {
   try {
     const browser = await puppeteer.launch(chromeOptions, {
       ignoreDefaultArgs: ["--disable-extensions"],
-      timeout: 3000,
+      timeout: 6000,
     });
     const page = await browser.newPage();
 
     await page.goto(config.url);
-    await page.screenshot({ path: "screenshot.png" });
-
-    const prices = await page.$$eval(".price", (element) => element.innerText);
-    const text = await page.evaluate(() =>
-      Array.from(
-        document.querySelectorAll(".price"),
-        (element) => element.textContent
-      )
-    );
-    text.forEach((element) => console.log(element));
+    // await page.screenshot({ path: "screenshot.png" });
+    for (let pageNumber = 1; pageNumber < 5; pageNumber++) {
+      const prices = await page.evaluate(() =>
+        Array.from(
+          document.querySelector(".feed_list").querySelectorAll(".price"),
+          (element) => element.textContent
+        )
+      );
+      prices.forEach((element) => console.log(element));
+      var newPage = config.url.concat("?page=", pageNumber.toString());
+      page.goto(newPage);
+      await page.waitForNavigation({ waitUntil: "networkidle2" });
+    }
   } catch (error) {
     console.error(error);
   }
