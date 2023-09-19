@@ -29,7 +29,7 @@ async function GetYad2List() {
     for (let pageNumber = 1; pageNumber < 5; pageNumber++) {
       const prices = await page.evaluate(() =>
         Array.from(
-          document.querySelector(".feed_list").querySelectorAll(".price"),
+          document.querySelector(".feed_list").querySelectorAll(".feeditem"),
           (element) => element.textContent
         )
       );
